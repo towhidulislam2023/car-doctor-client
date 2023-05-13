@@ -7,6 +7,12 @@ const Header = () => {
     const { user,logout }=useContext(authProviderContex)
     const manageLogout=()=>{
         logout()
+        .then(()=>{
+         
+        })
+        .catch(error=>{
+            console.log(error);
+        })
     }
     return (
         <div className="navbar bg-base-100 h-24">

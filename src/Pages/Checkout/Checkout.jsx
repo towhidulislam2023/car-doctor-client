@@ -22,7 +22,7 @@ const Checkout = () => {
             price,
             img
         }
-        fetch("http://localhost:5000/bookingServices", {
+        fetch("https://car-doctor-server-jade.vercel.app/bookingServices", {
             method: "POST",
             headers: {
                 "content-type": "application/json"
@@ -38,7 +38,7 @@ const Checkout = () => {
                         icon: "success",
                         button: "Ok!",
                     });
-                    
+
                 }
             });
     }

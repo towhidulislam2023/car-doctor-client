@@ -1,9 +1,13 @@
 import React, { useContext } from 'react';
 import img from '../../assets/images/login/login.svg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authProviderContex } from '../../Provider/AuthProvider/AuthProvider';
+import GoogleGitLogin from '../../sheared/GoogleGitLogin/GoogleGitLogin';
 const Login = () => {
     const { user, loginUser }=useContext(authProviderContex)
+    const location=useLocation()
+    const navigate=useNavigate()
+    const from=location.state?.from?.pathname||"/"
     const handleLogin = (event)=>{
         event.preventDefault();
         const form = event.target;
@@ -12,7 +16,8 @@ const Login = () => {
         loginUser(email,password)
         .then(result=>{
             form.reset()
-        
+            navigate(from,{replace:true})
+           
         })
         .catch(console.error())
 
@@ -48,6 +53,7 @@ const Login = () => {
                         </form>
                         <p className='my-4 text-center'>New to Car Doctors <Link className='text-orange-600 font-bold' to="/signup">Sign Up</Link> </p>
                     </div>
+                    <GoogleGitLogin></GoogleGitLogin>
                 </div>
             </div>
         </div>

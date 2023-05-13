@@ -10,32 +10,32 @@ import PrivateRoute from "./PrivateRoute";
 const router = createBrowserRouter([
     {
         path: "/",
-        element:<MainLayout></MainLayout>,
-        children:[
+        element: <MainLayout></MainLayout>,
+        children: [
             {
-                path:"/",
-                element:<Home></Home>
+                path: "/",
+                element: <Home></Home>
             },
             {
-                path:"/checkout/:id",
-                element:<Checkout></Checkout>,
-                loader: ({params}) => fetch(`http://localhost:5000/services/${params.id}`)
+                path: "/checkout/:id",
+                element: <PrivateRoute><Checkout></Checkout></PrivateRoute>,
+                loader: ({ params }) => fetch(`https://car-doctor-server-jade.vercel.app/services/${params.id}`)
             },
             {
                 path: "/bookingCart",
                 element: <PrivateRoute><BookingCart></BookingCart></PrivateRoute>,
-                // loader: () => fetch("http://localhost:5000/bookkedServices")
+                // loader: () => fetch("https://car-doctor-server-jade.vercel.app/bookkedServices")
             },
-            
+
         ]
     },
     {
-        path:"/login",
-        element:<LoginLayout></LoginLayout>
+        path: "/login",
+        element: <LoginLayout></LoginLayout>
     },
     {
-        path:"/signup",
-        element:<SignupLayout></SignupLayout>
+        path: "/signup",
+        element: <SignupLayout></SignupLayout>
     }
 ]);
 export default router;

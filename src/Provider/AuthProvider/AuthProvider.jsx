@@ -1,54 +1,82 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import app from '../../firebase/firebase.config';
-import { flushSync } from 'react-dom';
 
-export const authProviderContex=createContext(null)
-const AuthProvider = ({children}) => {
+export const authProviderContex = createContext(null)
+const AuthProvider = ({ children }) => {
     const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider()
     const [user, setuser] = useState(null)
-    const [loading,setLoading]=useState(true)
+    const [loading, setLoading] = useState(true)
 
-    const signupUser=(email,password)=>{
+    const signupUser = (email, password) => {
         setLoading(true)
-        return createUserWithEmailAndPassword(auth,email,password)
+        return createUserWithEmailAndPassword(auth, email, password)
 
     }
-    const loginUser=(email,password)=>{
+    const loginUser = (email, password) => {
         setLoading(true)
-        return signInWithEmailAndPassword(auth,email,password)
+        return signInWithEmailAndPassword(auth, email, password)
     }
-    const logout=()=>{
+    const logout = () => {
         setLoading(true)
         return signOut(auth)
     }
-    const updateName=(name)=>{
+    const updateName = (name) => {
         setLoading(true)
-        return updateProfile(auth.currentUser,{
-            displayName:name
+        return updateProfile(auth.currentUser, {
+            displayName: name
         })
 
     }
-    useEffect(()=>{
-        const unsubscribe=onAuthStateChanged(auth,currentUser=>{
+    const GoogleLogin = () => {
+        return signInWithPopup(auth, googleProvider)
+    }
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setLoading(false)
             setuser(currentUser)
+            if (currentUser && currentUser.email) {
+                const loggedUser = {
+                    email: currentUser?.email
+                }
+                console.log(loggedUser);
+                fetch("https://car-doctor-server-jade.vercel.app/jwt", {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify(loggedUser)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        // console.log(data);
+                        localStorage.setItem("access-token", data.token)
+                    })
+
+            }
+            else {
+                localStorage.removeItem("access-token")
+            }
+
+
         })
 
-        return () =>{
+        return () => {
             return unsubscribe()
         }
-    },[])
+    }, [])
 
 
-    
-    const authInfo={
+
+    const authInfo = {
         user,
         signupUser,
         loginUser,
         logout,
         updateName,
-        loading
+        loading,
+        GoogleLogin
     }
     return (
         <authProviderContex.Provider value={authInfo}>

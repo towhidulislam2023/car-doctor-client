@@ -2,16 +2,66 @@ import React, { useContext, useEffect, useState } from 'react';
 import chekoutimg from '../../assets/images/checkout/checkout.png';
 import { authProviderContex } from '../../Provider/AuthProvider/AuthProvider';
 import BookingRow from './BookingRow';
+import { useNavigate } from 'react-router-dom';
 
 const BookingCart = () => {
-    const {user}=useContext(authProviderContex)
+    const { user, logout } = useContext(authProviderContex)
     const [bookedServices, setBookedServices] = useState([])
+    const navigate = useNavigate()
+    const url = `https://car-doctor-server-jade.vercel.app/bookkedServices?email=${user.email}`
     useEffect(() => {
-        fetch(`http://localhost:5000/bookkedServices?email=${user?.email}`)
-        .then(res=>res.json())
-        .then(data=>setBookedServices(data))
-    }, [])
+        fetch(url, {
+            method: "GET",
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('access-token')}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.error) {
+                    setBookedServices(data)
+                }
+                else {
+                    // navigate("/")
+                }
+
+            })
+    }, [url, navigate])
     console.log(bookedServices);
+
+    const handleConfirm = (id) => {
+        console.log(id);
+        fetch(`https://car-doctor-server-jade.vercel.app/updatebookingSattus/${id}`, {
+            method: "PATCH",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({ status: 'confirm' })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.modifiedCount > 0) {
+                    const reaminingProduct = bookedServices.filter(bookedservice => bookedservice._id !== id)
+                    const updatedProduct = bookedServices.find(updated => updated._id === id)
+                    updatedProduct.status = "confirm"
+                    const newUpdatedProduct = [updatedProduct, ...reaminingProduct]
+                    setBookedServices(newUpdatedProduct)
+
+
+                    swal({
+                        title: "Good job!",
+                        text: "You clicked the button!",
+                        icon: "success",
+                        button: "Aww yiss!",
+                    });
+
+                }
+            })
+            .catch(error => {
+                console.error('Error updating booking status:', error);
+                // Handle the error as appropriate (e.g. show an error message to the user)
+            });
+    }
     return (
         <div className='my-24'>
             <div className='bg-red-50 relative mb-10'>
@@ -42,14 +92,14 @@ const BookingCart = () => {
                         </thead>
                         <tbody>
                             {/* row 1 */}
-                           
-                            {bookedServices && bookedServices.map(booked => <BookingRow key={booked._id} bookedServices={bookedServices} setBookedServices={setBookedServices} booked={booked} ></BookingRow>)}
+
+                            {bookedServices && bookedServices.map(booked => <BookingRow key={booked._id} bookedServices={bookedServices} setBookedServices={setBookedServices} booked={booked} handleConfirm={handleConfirm} ></BookingRow>)}
                         </tbody>
                     </table>
                 </div>
             </div>
             <div>
-               
+
             </div>
         </div>
     );

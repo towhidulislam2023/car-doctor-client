@@ -1,36 +1,9 @@
 import React, { useState } from 'react';
 import swal from 'sweetalert';
 
-const BookingRow = ({ booked, bookedServices, setBookedServices }) => {
-    const [Curreentstatus, setCurreentstatus] = useState(null)
+const BookingRow = ({ booked, bookedServices, setBookedServices, handleConfirm, }) => {
     const { _id, title, img, price, date, status } = booked
-    const handleConfirm = (id) => {
-        console.log(id);
-        fetch(`http://localhost:5000/updatebookingSattus/${id}`, {
-            method: "PATCH",
-            headers: {
-                "content-type": "application/json"
-            },
-            body: JSON.stringify({ status: 'confirm' })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.modifiedCount > 0) {
-                    setCurreentstatus("confirm")
-                    swal({
-                        title: "Good job!",
-                        text: "You clicked the button!",
-                        icon: "success",
-                        button: "Aww yiss!",
-                    });
 
-                }
-            })
-            .catch(error => {
-                console.error('Error updating booking status:', error);
-                // Handle the error as appropriate (e.g. show an error message to the user)
-            });
-    }
     const handelDelletProduct = (id) => {
 
         swal({
@@ -42,7 +15,7 @@ const BookingRow = ({ booked, bookedServices, setBookedServices }) => {
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    fetch(`http://localhost:5000/deletebookings/${id}`, {
+                    fetch(`https://car-doctor-server-jade.vercel.app/deletebookings/${id}`, {
                         method: "DELETE",
                     })
                         .then(res => res.json())
