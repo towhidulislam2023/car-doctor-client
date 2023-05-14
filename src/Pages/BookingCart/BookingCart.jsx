@@ -8,8 +8,9 @@ const BookingCart = () => {
     const { user, logout } = useContext(authProviderContex)
     const [bookedServices, setBookedServices] = useState([])
     const navigate = useNavigate()
-    const url = `https://car-doctor-server-jade.vercel.app/bookkedServices?email=${user.email}`
     useEffect(() => {
+        if(!user?.email) return;
+        const url = `https://car-doctor-server-jade.vercel.app/bookkedServices?email=${user.email}`
         fetch(url, {
             method: "GET",
             headers: {
@@ -26,7 +27,7 @@ const BookingCart = () => {
                 }
 
             })
-    }, [url, navigate])
+    }, [user?.email , navigate])
     console.log(bookedServices);
 
     const handleConfirm = (id) => {

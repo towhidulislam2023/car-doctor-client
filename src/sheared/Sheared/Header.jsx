@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { authProviderContex } from '../../Provider/AuthProvider/AuthProvider';
 const Header = () => {
-    const { user,logout }=useContext(authProviderContex)
+    const { user,logout,loading }=useContext(authProviderContex)
+    console.log(loading, "from header");
     const manageLogout=()=>{
         logout()
         .then(()=>{

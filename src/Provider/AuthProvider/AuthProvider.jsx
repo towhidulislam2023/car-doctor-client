@@ -30,12 +30,12 @@ const AuthProvider = ({ children }) => {
 
     }
     const GoogleLogin = () => {
+        setLoading(true)
         return signInWithPopup(auth, googleProvider)
     }
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
-            setLoading(false)
-            setuser(currentUser)
+
             if (currentUser && currentUser.email) {
                 const loggedUser = {
                     email: currentUser?.email
@@ -52,11 +52,15 @@ const AuthProvider = ({ children }) => {
                     .then(data => {
                         // console.log(data);
                         localStorage.setItem("access-token", data.token)
+                        setLoading(false)
+                        setuser(currentUser)
                     })
 
             }
             else {
                 localStorage.removeItem("access-token")
+                setLoading(false)
+                setuser(currentUser)
             }
 
 

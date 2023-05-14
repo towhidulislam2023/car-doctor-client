@@ -13,7 +13,6 @@ const GoogleGitLogin = () => {
         .then(result=>{
             console.log(result.user);
             navigate(from, { replace: true })
-
         })
         .catch(error=>{
             console.log(error);
